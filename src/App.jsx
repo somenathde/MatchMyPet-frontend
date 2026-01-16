@@ -8,6 +8,7 @@ import Login from './componants/Login'
 import Body from './componants/Body'
 import { Provider } from 'react-redux'
 import appStore from './utils/appStore'
+import SignUp from './componants/SignUp'
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Body />}>
               <Route path="/login" element={<div><Login /></div>} />
-              <Route path="/signup" element={<div>Signin Page</div>} />
+              <Route path="/signup" element={<div><SignUp /></div>} />
               <Route path="/adopt" element={<h1>Adopt Pet Page</h1>} />
               <Route path="/lost-and-found" element={<h1>Lost & Found Page</h1>} />
               <Route path="/grooming" element={<h1>Grooming Services Page</h1>} />
