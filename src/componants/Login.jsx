@@ -12,6 +12,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const res = await axios.post(import.meta.env.VITE_SERVER_URL + "/auth/login", { emailId, password }, { withCredentials: true });
+      localStorage.setItem("isLoggedIn","true")
       dispatch(addUser(res.data.user))
      navigate("/")
     } catch (error) {

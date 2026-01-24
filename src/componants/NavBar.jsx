@@ -1,11 +1,23 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from "react-router-dom";
+import api from '../api/axios';
+import { addUser } from '../utils/userSlice';
 
 
 const NavBar = () => {
+  const dispatch=useDispatch();
   const user = useSelector(store => store.user)
-  console.log(user)
+
+  const fetchUser = async () => {
+    const res = await api.get("/user/me")
+    dispatch(addUser(res?.data?.data))
+  }
+
+  useEffect(() => {
+    if(!user && localStorage.getItem("isLoggedIn")==="true") fetchUser()
+  }, [])
+
   return (
     <div className="navbar  bg-gray-100 fixed top-0 left-0 w-full ">
       <div className="flex-1">
