@@ -1,25 +1,12 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Link } from "react-router-dom";
-import api from '../api/axios';
-import { addUser } from '../utils/userSlice';
-
+import { useSelector } from 'react-redux'
+import { Link, useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-  const dispatch=useDispatch();
-  const user = useSelector(store => store.user)
-
-  const fetchUser = async () => {
-    const res = await api.get("/user/me")
-    dispatch(addUser(res?.data?.data))
-  }
-
-  useEffect(() => {
-    if(!user && localStorage.getItem("isLoggedIn")==="true") fetchUser()
-  }, [])
+  const {user} = useSelector(store => store?.user)
+  const navigate = useNavigate();
 
   return (
-    <div className="navbar  bg-gray-100 fixed top-0 left-0 w-full ">
+    <div className="navbar  bg-gray-100 sticky top-0 z-50 shadow-md px-4">
       <div className="flex-1">
         <div>
           <Link to="/" className="btn btn-ghost text-xl"> MatchMyPet </Link>
@@ -38,9 +25,6 @@ const NavBar = () => {
           </li>
           <li>
             <Link to="/stores">Food Store</Link>
-          </li>
-          <li>
-            <Link to="/orders">My Orders</Link>
           </li>
         </ul>
       </div>
@@ -64,9 +48,11 @@ const NavBar = () => {
               <li>
                 <Link to="/profile">Profile</Link>
               </li>
-              <li><a>Settings</a></li>
               <li>
-                <Link to="/logout">Logout</Link>
+                <Link to="/orders">Orders</Link>
+              </li>
+              <li>
+                <button onClick={() => navigate("/logout")} className="text-red-400">Logout</button>
               </li>
             </ul>
           </div>)}
