@@ -10,12 +10,20 @@ const LostAndFound = () => {
   const [loading, setLoading] = useState(false);
   const [petType, setPetType] = useState("all");
   const user = useSelector((store) => store.user.user);
+  const [searchId, setSearchId] = useState("");
 
-  const fetchPets = async (type) => {
+  const fetchPets = async ({type="all", id=""}={}) => {
     try {
-      const endpoint = type === "all" ? "/lost-and-found" : `/lost-and-found/${type}`;
       setLoading(true);
-      const res = await api.get(endpoint);
+      setError("");
+      let res;
+      if (id) {
+        res = await api.get(`/lost-and-found/${id}`);
+        setPets(res.data?.data ? [res.data.data] : []);
+        return;
+      }
+      const endpoint = type === "all" ? "/lost-and-found" : `/lost-and-found/${type}`;
+      res = await api.get(endpoint);
       setPets(res.data?.data);
     } catch (error) {
       console.error("Fetch lost and found pets error:", error);
@@ -26,7 +34,8 @@ const LostAndFound = () => {
   }
 
   useEffect(() => {
-    fetchPets(petType);
+    setSearchId("");
+    fetchPets({ type: petType });
   }, [petType]);
 
   if (loading) {
@@ -54,7 +63,8 @@ const LostAndFound = () => {
         </button>
         <button
           className={`btn ${petType === "all" ? "btn-primary" : "btn-outline"}`}
-          onClick={() => { setPetType("all") }}
+          onClick={() => {setSearchId(""); setPetType("all"); fetchPets({ type: "all" }) }}
+          
         >
           🐕 All Pets
         </button>
@@ -63,8 +73,15 @@ const LostAndFound = () => {
             type="text"
             placeholder="Search by Pet ID"
             className="input input-bordered w-full max-w-xs"
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
           />
-          <button className="btn ml-2" onClick={() => { }}>Search</button>
+          <button className="btn ml-2" onClick={() => {
+            if (!searchId.trim()) return;
+            if(!user){ alert("Please login to search by ID");
+              return; }
+            fetchPets({ id: searchId.trim() });
+          }}>Search</button>
         </div>
       </div>
 
@@ -140,7 +157,10 @@ const LostAndFound = () => {
                       📞 Contact: {pet.contactNumber || ""} </p>)}
 
                   <div className="card-actions mt-4">
-                    <button
+                    <button onClick={() => {
+                      if(!user){ alert("Please login to contact or Report");
+                        return;
+                    }}}
                       disabled={pet.status === "resolved"}
                       className={`btn w-full ${pet.status !== "resolved"
                         ? "btn-dash"
