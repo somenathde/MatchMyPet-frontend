@@ -31,7 +31,7 @@ const NavBar = () => {
 
       <div className="flex gap-2">
         <Link to="/cart" className="btn btn-ghost btn-circle relative">Cart</Link>
-        {user && (
+        {user ? (
 
           <div className="dropdown dropdown-end flex ">
             <p className='px-4 '>Welcome, {user.firstName}</p>
@@ -55,7 +55,9 @@ const NavBar = () => {
                 <button onClick={() => navigate("/logout")} className="text-red-400">Logout</button>
               </li>
             </ul>
-          </div>)}
+          </div>):(
+          <button onClick={() => navigate("/login")} className="btn btn-ghost text-emerald-800 font-medium">Login</button>
+        )}
       </div>
     </div>
   )

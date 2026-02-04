@@ -3,19 +3,35 @@ import api from '../api/axios';
 import Shimmer from './ShimmerUI';
 import { ALT_LostAndFound_IMG } from '../utils/constants';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const LostAndFound = () => {
   const [pets, setPets] = useState([]);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [petType, setPetType] = useState("all");
   const user = useSelector((store) => store.user.user);
   const [searchId, setSearchId] = useState("");
+  const navigate = useNavigate();
 
-  const fetchPets = async ({type="all", id=""}={}) => {
+const handlePostPet = (type) => {
+    if (!user) {
+      toast.error("Please login to post a pet", { duration: 2000 });
+      return;
+    }
+    navigate(`/lost-and-found-report/${type}`);
+  }
+  const handleSearch = () => {
+    if (!searchId.trim()) return;
+    if (!user) {
+      toast.error("Please login to search by ID", { duration: 2000 });
+      return;
+    }
+    fetchPets({ id: searchId.trim() });
+  }
+  const fetchPets = async ({ type = "all", id = "" } = {}) => {
     try {
       setLoading(true);
-      setError("");
       let res;
       if (id) {
         res = await api.get(`/lost-and-found/${id}`);
@@ -26,8 +42,9 @@ const LostAndFound = () => {
       res = await api.get(endpoint);
       setPets(res.data?.data);
     } catch (error) {
-      console.error("Fetch lost and found pets error:", error);
-      setError("Failed to load lost and found pets");
+      if (error.response?.status && error.response.status >= 400 && error.response.status < 500) {
+        toast.error("Please Give Valid Pet ID", { duration: 4000 });
+      } else toast.error("Failed to load lost and found pets");
     } finally {
       setLoading(false);
     }
@@ -41,10 +58,6 @@ const LostAndFound = () => {
   if (loading) {
     return <div><Shimmer /></div>
   }
-  if (error) {
-    return <div className='flex justify-center items-center h-[60vh] text-red-600'>{error}</div>
-  }
-
   return (
     <>
       <div className="flex justify-center gap-4 mb-8">
@@ -63,8 +76,8 @@ const LostAndFound = () => {
         </button>
         <button
           className={`btn ${petType === "all" ? "btn-primary" : "btn-outline"}`}
-          onClick={() => {setSearchId(""); setPetType("all"); fetchPets({ type: "all" }) }}
-          
+          onClick={() => { setSearchId(""); if(petType==="all"){fetchPets({ type: "all" })}; setPetType("all");  }}
+
         >
           🐕 All Pets
         </button>
@@ -77,12 +90,26 @@ const LostAndFound = () => {
             onChange={(e) => setSearchId(e.target.value)}
           />
           <button className="btn ml-2" onClick={() => {
-            if (!searchId.trim()) return;
-            if(!user){ alert("Please login to search by ID");
-              return; }
-            fetchPets({ id: searchId.trim() });
+            handleSearch();
           }}>Search</button>
         </div>
+      </div>
+      <div className="flex justify-center gap-4 mb-8">
+        <button
+          className="btn btn-primary"
+          onClick={() => { handlePostPet("found") }}
+
+        >
+          🐾 Found A Pet
+        </button>
+
+        <button
+          className="btn btn-secondary text-shadow-cyan-800"
+          onClick={() => { handlePostPet("lost") }}
+
+        >
+          🐾 Lost A Pet
+        </button>
       </div>
 
 
@@ -158,9 +185,11 @@ const LostAndFound = () => {
 
                   <div className="card-actions mt-4">
                     <button onClick={() => {
-                      if(!user){ alert("Please login to contact or Report");
+                      if (!user) {
+                        toast.error("Please login to contact or Report", { duration: 2000 });
                         return;
-                    }}}
+                      }
+                    }}
                       disabled={pet.status === "resolved"}
                       className={`btn w-full ${pet.status !== "resolved"
                         ? "btn-dash"
