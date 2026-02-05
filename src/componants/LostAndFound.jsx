@@ -189,6 +189,7 @@ const handlePostPet = (type) => {
                         toast.error("Please login to contact or Report", { duration: 2000 });
                         return;
                       }
+                      navigate(`/chat/${pet.userId}`);
                     }}
                       disabled={pet.status === "resolved"}
                       className={`btn w-full ${pet.status !== "resolved"

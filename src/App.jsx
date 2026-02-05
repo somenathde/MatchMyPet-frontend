@@ -23,6 +23,7 @@ import api from './api/axios'
 import Home from './componants/Home'
 import { Toaster } from 'react-hot-toast'
 import LostAndFoundPost from './componants/LostAndFoundPost'
+import Chat from './componants/Chat'
 
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
           <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="lost-and-found-report/:type" element={<div><ProtectedRoute><LostAndFoundPost /></ProtectedRoute></div>} />
+          <Route path="chat/:targetUserId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
         </Route>
       </Routes>
       
