@@ -50,7 +50,7 @@ const Chat = () => {
 
     const handleSend = () => {
         if (!message.trim() || !socketRef.current) return;
-        socketRef.current.emit("sendMessage", { userId, targetUserId, message });
+        socketRef.current.emit("sendMessage", {firstName:user?.firstName, userId, targetUserId, message });
         setMessage("");
     }
     useEffect(() => {
@@ -59,7 +59,7 @@ const Chat = () => {
         const handleMessages = (msg) => ({
             senderId: msg.senderId,
             message: msg.message,
-            senderName: "", // msg.senderId === userId ? "You" : `User ${msg.senderId}`,
+            senderName: msg.senderName,
             time: msg.createdAt,
         })
         const onMessageReceived = (msg) => {
