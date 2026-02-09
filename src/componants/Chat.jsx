@@ -50,7 +50,7 @@ const Chat = () => {
 
     const handleSend = () => {
         if (!message.trim() || !socketRef.current) return;
-        socketRef.current.emit("sendMessage", {firstName:user?.firstName, userId, targetUserId, message });
+        socketRef.current.emit("sendMessage", {firstName:user?.firstName, targetUserId, message });
         setMessage("");
     }
     useEffect(() => {
@@ -65,7 +65,7 @@ const Chat = () => {
         const onMessageReceived = (msg) => {
             setMessages((prev) => [...prev, handleMessages(msg)]);
         }
-        socketRef.current.emit("joinChat", { userId, targetUserId });
+       // socketRef.current.emit("joinChat", { userId, targetUserId });
         socketRef.current.on("MessageReceived", onMessageReceived)
         return () => {
             socketRef.current.off("MessageReceived", onMessageReceived);

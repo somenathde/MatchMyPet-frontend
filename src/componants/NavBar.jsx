@@ -1,9 +1,21 @@
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux'
 import { Link, useNavigate } from "react-router-dom";
+import { createSocketConnection } from '../utils/socket';
+import toast from 'react-hot-toast';
 
 const NavBar = () => {
   const {user} = useSelector(store => store?.user)
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    const socket= createSocketConnection();
+    socket.on("NewMessageNotification",(data)=>{
+      toast.success(`${data.senderName} : ${data.message.slice(0,25)}`)
+     // dispatch(addNotification(data))
+    })
+    return()=>socket.disconnect()
+  },[])
 
   return (
     <div className="navbar  bg-gray-100 sticky top-0 z-50 shadow-md px-4">
