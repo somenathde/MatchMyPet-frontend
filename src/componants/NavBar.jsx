@@ -43,6 +43,7 @@ const NavBar = () => {
 
       <div className="flex gap-2">
         <Link to="/cart" className="btn btn-ghost btn-circle relative">Cart</Link>
+        <Link to="/chat/list" className="btn btn-ghost btn-secondary relative">Message</Link>
         {user ? (
 
           <div className="dropdown dropdown-end flex ">
