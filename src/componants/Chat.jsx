@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { createSocketConnection } from '../utils/socket';
 import { useSelector } from 'react-redux';
 import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 
 const Chat = () => {
@@ -28,6 +29,7 @@ const Chat = () => {
 
         const fetchMessages = async () => {
             try {
+                if (targetUserId === userId) { toast.error("You Cant Send Message YourSelf"); return }
                 const res = await api.get(`/chat/${targetUserId}`);
                 const chatMessages = res.data?.data?.messages.map((msg) => ({
                     senderId: msg.senderId._id,
@@ -37,12 +39,12 @@ const Chat = () => {
                 }));
                 setMessages(chatMessages || []);
             } catch (error) {
-                console.log("Error fetching messages:", error);
+                toast.error(error.message)
             }
         }
 
         fetchMessages();
-    }, [targetUserId])
+    }, [targetUserId, userId])
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -50,7 +52,8 @@ const Chat = () => {
 
     const handleSend = () => {
         if (!message.trim() || !socketRef.current) return;
-        socketRef.current.emit("sendMessage", {firstName:user?.firstName, targetUserId, message });
+        if (targetUserId === userId) { toast.error("You Cant Send Message YourSelf"); return }
+        socketRef.current.emit("sendMessage", { firstName: user?.firstName, targetUserId, message });
         setMessage("");
     }
     useEffect(() => {
